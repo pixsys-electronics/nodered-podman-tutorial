@@ -1,4 +1,4 @@
-# **Building your own Node-RED Image with Podman**
+# **Create your own Node-RED Image with Podman**
 <p align="left">
    <img src="assets/node-red-icon.png" alt="NodeRedIcon" width="10%">
    <img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
