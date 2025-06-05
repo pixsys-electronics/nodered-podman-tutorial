@@ -10,7 +10,7 @@ Run a Podman container with:
 
 - Pre-installed Node-RED
 - Configured **dashboard**, **serial-port**, and **modbus** modules
-- Access to `/dev/ttyUSB0` devices (for Modbus)
+- Access to `/dev/ttyCOM1` and `/dev/ttyCOM2` devices (for Modbus)
 - Persistent volume to save Node-RED flows and configurations
 
 ## Prerequisites
@@ -18,6 +18,7 @@ Run a Podman container with:
 - Basic knowledge of Linux commands (optional if you use GUIs)
 - Basic knowledge of [podman](https://podman.io/) and containers
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
+- Basic knowledge of the [SSH](https://en.wikipedia.org/wiki/Secure_Shell) protocol
 
 ## **Steps**
 
@@ -134,37 +135,51 @@ If you are not familiar with command-lines, you can do everything from the Cockp
    <img src="assets/dockergui6.png" alt="Cockpit3" width="80%">
 
 
-### 5. Start the Container
+### 3. Create and start the Container
 
-#### 5.1 - Podman-compose
+#### Linux command-line
+If you didn't create a `node-red-compose.yml` and you just want to use podman, you need to:
 
-To start the container:
+1. Build the image
+
+   ```bash
+   podman build -t node-red-custom -f node-red.Dockerfile .
+   ```
+
+2. Run the container
+
+   ```bash
+   podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom   
+   ```
+
+Otherwise, if you want to go for podman-compose, you only need to run:
 
 ```bash
 MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --build
 ```
 **Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
 
-To check logs:
+#### Cockpit
+1. On the `Containers` section, press the "Create container" button. A menu will appear.
 
-```bash
-podman logs -f NodeREDContainer
-```
+   <img src="assets/dockergui7.png" alt="Cockpit3" width="80%">
 
-To stop the container:
+2. Fill the `Details` section as shown below:
 
-```bash
-podman-compose -f node-red-compose.yml down
-```
+   <img src="assets/dockergui8.png" alt="Cockpit3" width="80%">
 
-#### 5.2 - Podman run
-The same result can be achieve using directly *podman build* followed by *podman run*:
-```bash
-podman build -t node-red-custom -f node-red.Dockerfile .
-podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom
-```
+3. Navigate to the `Integration` tab and fill it as shown below:
 
----
+   <img src="assets/dockergui9.png" alt="Cockpit3" width="80%">
+
+4. Navigate to the `Health check` tab and fill it as shown below:
+
+   <img src="assets/dockergui10.png" alt="Cockpit3" width="80%">
+
+5. Press the "Create and run" button. After the creation, you will be able to see the created container inside the `Container` section, with a "Running" value on the `State` column.
+
+   <img src="assets/dockergui11.png" alt="Cockpit3" width="80%">
+
 
 ### 6. Access Node-RED
 
@@ -237,6 +252,20 @@ podman load -i node-red-custom.tar
    ```bash
    podman load -i node-red-custom.tar
    ```
+
+---
+
+To check logs:
+
+```bash
+podman logs -f NodeREDContainer
+```
+
+To stop the container:
+
+```bash
+podman-compose -f node-red-compose.yml down
+```
 
 ---
 
