@@ -1,0 +1,19 @@
+services:
+  nodered:
+    # tell podman-compose to build the previous custom node-red image
+    build:
+      context: .
+      dockerfile: node-red.Dockerfile
+    image: node-red-custom
+    container_name: NodeREDContainer
+    restart: always
+    group_add: keep-groups
+    userns_mode: keep-id # map my host user to the user namespace of the container 
+    user: ${MY_UID}:${MY_GID}
+    ports:
+        - 1880:1880 # map container port 1880 to host port 1880
+    devices:
+      - /dev/ttyCOM1:/dev/ttyCOM1 # map devices
+      - /dev/ttyCOM2:/dev/ttyCOM2
+    volumes:
+      - /data/user/node-red-podman/data:/data  # Persistent volume for flows and configurations
