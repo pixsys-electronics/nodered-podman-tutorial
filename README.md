@@ -49,20 +49,17 @@ Create a file named **`node-red.Dockerfile`** with the following content:
 
 ```dockerfile
 # Use Node-RED as base
-FROM nodered/node-red:latest
+FROM docker.io/nodered/node-red:3.1.15
 
 # Maintainer information
 LABEL maintainer="YourName <youremail@example.com>"
 
-# Install additional modules: Dashboard and Modbus
-RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-modbus node-red-contrib-modbus-flex-server --unsafe-perm && \
+# Install additional modules: Dashboard, OPC-UA, InfluxDB
+RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-modbus node-red-contrib-modbus-flex-server && \
     npm cache clean --force
 
 # Expose port 1880 for Node-RED access
 EXPOSE 1880
-
-# Default command to start Node-RED
-CMD ["npm", "start", "--", "--userDir", "/data"]
 ```
 
 ### 3. Create the Podman Compose File
@@ -79,7 +76,8 @@ services:
     image: node-red-custom
     container_name: NodeREDContainer
     restart: always
-    group_add: keep-groups
+    group_add:
+      - keep-groups
     userns_mode: keep-id # map my host user to the user namespace of the container 
     user: ${MY_UID}:${MY_GID}
     ports:
@@ -91,12 +89,14 @@ services:
       - /data/user/node-red-podman/data:/data  # Persistent volume for flows and configurations
 ```
 
-### 5. Start the Container with Podman Compose
+### 5. Start the Container
+
+#### 5.1 - Podman-compose
 
 To start the container:
 
 ```bash
-MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml -d up --build
+MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --build
 ```
 **Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
 
@@ -112,6 +112,13 @@ To stop the container:
 podman-compose -f node-red-compose.yml down
 ```
 
+#### 5.2 - Podman run
+The same result can be achieve using directly *podman build* followed by *podman run*:
+```bash
+podman build -t node-red-custom -f node-red.Dockerfile .
+podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom
+```
+
 ---
 
 ### 6. Access Node-RED
@@ -120,6 +127,11 @@ podman-compose -f node-red-compose.yml down
    
    ```bash
    podman ps
+   ```
+   The output should be something like this:
+   ```bash
+   CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
+   004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
    ```
 
 2. **Access Node-RED from your browser**:
@@ -130,10 +142,14 @@ podman-compose -f node-red-compose.yml down
    http://<DEVICE_IP>:1880
    ```
 
+   <img src="assets/node-red-welcome.png" alt="NodeRedWelcome" width="60%">
+
 3. **Verify Installed Modules**:
    
    - Go to the **Manage palette** menu in Node-RED.
    - Check that the **node-red-dashboard** and **node-red-contrib-modbus** modules are installed.
+
+   <img src="assets/node-red-nodes.png" alt="NodeRedWelcome" width="60%">
 
 ---
 

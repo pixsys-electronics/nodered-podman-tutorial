@@ -1,5 +1,5 @@
 # Use Node-RED as base
-FROM nodered/node-red:3.1.15
+FROM docker.io/nodered/node-red:3.1.15
 
 # Maintainer information
 LABEL maintainer="YourName <youremail@example.com>"
@@ -10,6 +10,3 @@ RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-mod
 
 # Expose port 1880 for Node-RED access
 EXPOSE 1880
-
-# Default command to start Node-RED
-CMD ["npm", "start", "--", "--userDir", "/data"]
