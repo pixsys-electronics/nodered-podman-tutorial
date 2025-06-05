@@ -1,21 +1,18 @@
-docker build -f docker/node-red.Dockerfile -t node-red-example .
-mkdir node-red-data
-docker run -it -p 1880:1880 -v $(pwd)/node-red-data:/data node-red-example:latest
-
-# **Guide to Configuring a Podman Container with Custom Node-RED**
+# **Building your own Node-RED Image with Podman**
 
 ## **Objective**
 
-Create a Podman container with:
+Run a Podman container with:
 
 - Pre-installed Node-RED
-- Configured **node-red-dashboard** and **node-red-contrib-modbus** modules
+- Configured **dashboard**, **serial-port**, and **modbus** modules
 - Access to `/dev/ttyUSB0` devices (for Modbus)
-- Network in `host` mode
 - Persistent volume to save Node-RED flows and configurations
-- Start and connect to the container
 
----
+## Prerequisites
+- A [WebPanel (WP)](https://www.pixsys.net/en/hmi-panel-pc/web-panel) or [TouchController (TC)](https://www.pixsys.net/en/programmable-devices/hmi-codesys) device with a [WebVisu](https://github.com/tnentwig/WebVisu) license.
+- Basic knowledge of Linux commands
+- Basic knowledge of [podman](https://podman.io/) and containers
 
 ## **Steps**
 
@@ -63,44 +60,30 @@ EXPOSE 1880
 CMD ["npm", "start", "--", "--userDir", "/data"]
 ```
 
----
+### 3. Create the Podman Compose File
 
-### 3. Build the Custom Image
-
-Run the following command to create the custom image:
-
-```bash
-podman build -t node-red-custom -f node-red.Dockerfile
-```
-
----
-
-### 4. Create the Podman Compose File
-
-Create a file named **`podman-compose.yml`** with the following content:
+Create a file named **`node-red-compose.yml`** with the following content:
 
 ```yaml
-version: "3.9"
-
 services:
   nodered:
-    image: node-red-custom  # Use the custom image
+    # tell podman-compose to build the previous custom node-red image
+    build:
+      context: .
+      dockerfile: node-red.Dockerfile
+    image: node-red-custom
     container_name: NodeREDContainer
     restart: always
-    network_mode: host
+    group_add: keep-groups
+    userns_mode: keep-id # map my host user to the user namespace of the container 
+    user: ${MY_UID}:${MY_GID}
+    ports:
+        - 1880:1880 # map container port 1880 to host port 1880
     devices:
-      - /dev/ttyCOM1:/dev/ttyCOM1
+      - /dev/ttyCOM1:/dev/ttyCOM1 # map devices
       - /dev/ttyCOM2:/dev/ttyCOM2
-    group_add:
-      - keep-groups
     volumes:
       - /data/user/node-red-podman/data:/data  # Persistent volume for flows and configurations
-    stdin_open: true
-    tty: true
-```
-
-```bash
-chmod 777 data
 ```
 
 ### 5. Start the Container with Podman Compose
@@ -108,20 +91,27 @@ chmod 777 data
 To start the container:
 
 ```bash
-podman-compose up -d
+MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml -d up --build
+```
+**Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
+
+To check logs:
+
+```bash
+podman logs -f NodeREDContainer
 ```
 
 To stop the container:
 
 ```bash
-podman-compose down
+podman-compose -f node-red-compose.yml down
 ```
 
 ---
 
 ### 6. Access Node-RED
 
-1. **Check that the container is active**:
+1. **Check that the container is running**:
    
    ```bash
    podman ps
@@ -164,31 +154,19 @@ podman load -i node-red-custom.tar
 
 ## **Summary of Main Commands**
 
-1. **Build the image**:
+1. **Start the container**:
    
    ```bash
-   podman build -t node-red-custom -f node-red.Dockerfile
+   MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml -d up --build
    ```
 
-2. **Start the container**:
-   
-   ```bash
-   podman-compose up -d
-   ```
-
-3. **Access Node-RED**:
-   
-   ```
-   http://<DEVICE_IP>:1880
-   ```
-
-4. **Export the image**:
+2. **Export the image**:
    
    ```bash
    podman save -o node-red-custom.tar node-red-custom
    ```
 
-5. **Import the image**:
+3. **Import the image**:
    
    ```bash
    podman load -i node-red-custom.tar
