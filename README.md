@@ -159,6 +159,19 @@ MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --buil
 ```
 **Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
 
+To make sure the container is running, run:
+
+```bash
+podman ps
+```
+
+The output should be something like this:
+
+```bash
+CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
+004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
+```
+
 #### Cockpit
 1. On the `Containers` section, press the "Create container" button. A menu will appear.
 
@@ -181,20 +194,9 @@ MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --buil
    <img src="assets/dockergui11.png" alt="Cockpit3" width="80%">
 
 
-### 6. Access Node-RED
+### 4. Access Node-RED
 
-1. **Check that the container is running**:
-   
-   ```bash
-   podman ps
-   ```
-   The output should be something like this:
-   ```bash
-   CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
-   004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
-   ```
-
-2. **Access Node-RED from your browser**:
+1. **Access Node-RED from your browser**:
    
    Open a browser and navigate to:
    
@@ -204,70 +206,196 @@ MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --buil
 
    <img src="assets/node-red-welcome.png" alt="NodeRedWelcome" width="60%">
 
-3. **Verify Installed Modules**:
+2. **Install and verify the modules**:
    
-   - Go to the **Manage palette** menu in Node-RED.
-   - Check that the **node-red-dashboard** and **node-red-contrib-modbus** modules are installed.
+   1. Go to the **Manage palette** menu in Node-RED by pressing the hamburger menu icon on the top right
+
+   <img src="assets/node-red-hamburger.png" alt="NodeRedWelcome" width="60%">
+
+   2. If you have followed the `Cockpit` guide, you will need to manually install the *dashboard* and the *modbus* modulesm otherwise go directly to section 4.3. Type `node-red-dashboard` and press the "Install" button to install the module. Do the same thing with `node-red-contrib-modbus` and `node-red-contrib-serial-port`
+
+   <img src="assets/node-red-install-module.png" alt="NodeRedWelcome" width="60%">
+
+   3. Check that the modules are installed.
 
    <img src="assets/node-red-nodes.png" alt="NodeRedWelcome" width="60%">
 
----
+3. **Import a flow**
 
-### 7. Export and Import the Image
+   If you want to make sure everything works correctly, use this [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) file as a test:
 
-#### **Export the Image**
+   ```json
+      [
+    {
+        "id": "1e6b97b5.687fd8",
+        "type": "tab",
+        "label": "Dashboard",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7c8f99d9.196b98",
+        "type": "ui_text",
+        "z": "1e6b97b5.687fd8",
+        "group": "dd4567b9.6a4c18",
+        "order": 1,
+        "width": "12",
+        "height": "1",
+        "name": "Title",
+        "label": "Dashboard - Random Data Display",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 330,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2e4a56f8.cfa23a",
+        "type": "ui_gauge",
+        "z": "1e6b97b5.687fd8",
+        "name": "Random Gauge",
+        "group": "dd4567b9.6a4c18",
+        "order": 2,
+        "width": "6",
+        "height": "6",
+        "gtype": "gage",
+        "title": "Random Value",
+        "label": "%",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": ["#00b500","#e6e600","#ca3838"],
+        "seg1": "30",
+        "seg2": "70",
+        "x": 320,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3b9ddefd.32b9d",
+        "type": "ui_chart",
+        "z": "1e6b97b5.687fd8",
+        "name": "Time-based Chart",
+        "group": "dd4567b9.6a4c18",
+        "order": 3,
+        "width": "6",
+        "height": "6",
+        "label": "Random Time Chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": ["#00b500","#e6e600","#ca3838"],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 600,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "74b1aef8.e7e0d8",
+        "type": "function",
+        "z": "1e6b97b5.687fd8",
+        "name": "Generate Random Data",
+        "func": "msg.payload = Math.floor(Math.random() * 100);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "2e4a56f8.cfa23a",
+                "3b9ddefd.32b9d"
+            ]
+        ]
+    },
+    {
+        "id": "e0e9bd3c.a8ae2",
+        "type": "inject",
+        "z": "1e6b97b5.687fd8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "74b1aef8.e7e0d8"
+            ]
+        ]
+    },
+    {
+        "id": "dd4567b9.6a4c18",
+        "type": "ui_group",
+        "z": "",
+        "name": "Random Data",
+        "tab": "fe9b4293.8df8e",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "fe9b4293.8df8e",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Main Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+   ]
+   ```
 
-To save the image as a tar file:
+   1. Go to the **Import** menu by pressing the hamburger menu icon on the top right, and paste the file above, then press the "Import" button.
+
+      <img src="assets/node-red-import.png" alt="NodeRedWelcome" width="80%">
+      <img src="assets/node-red-import-node.png" alt="NodeRedWelcome" width="80%">
+      <img src="assets/node-red-diagram.png" alt="NodeRedWelcome" width="80%">
+   
+   2. Press the red "Deploy" button on the top-right of the page
+   3. Navigate to `<DEVICE_ADDRESS>:1880/ui`. The output should be something like this:
+
+      <img src="assets/node-red-dashboard.png" alt="NodeRedWelcome" width="80%">
+
+### 5. Set the dashboard as main page
+If you want the dashboard to be the main application of your WP/TC, access Cockpit and navigate to `WP Settings` and look for "Main application settings". Here, set the URL to `http://127.0.0.1:1880/ui` or `http://localhost:1880/ui`, and press the "Save" button. After then next reboot, the dashboard will appear in fullscreen-mode.
+
+### 6. (Optional) Export and Import the Image
+If you have manually created and built the node-red-custom image, and you want to use it in other WP/TC, you can export it from your current device and then load it in another, using podman.
+
+To save the image as a tar archive:
 
 ```bash
 podman save -o node-red-custom.tar node-red-custom
 ```
-
-#### **Import the Image**
 
 To import the image on another system:
 
 ```bash
 podman load -i node-red-custom.tar
 ```
-
----
-
-## **Summary of Main Commands**
-
-1. **Start the container**:
-   
-   ```bash
-   MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml -d up --build
-   ```
-
-2. **Export the image**:
-   
-   ```bash
-   podman save -o node-red-custom.tar node-red-custom
-   ```
-
-3. **Import the image**:
-   
-   ```bash
-   podman load -i node-red-custom.tar
-   ```
-
----
-
-To check logs:
-
-```bash
-podman logs -f NodeREDContainer
-```
-
-To stop the container:
-
-```bash
-podman-compose -f node-red-compose.yml down
-```
-
----
 
 ## **Conclusion**
 

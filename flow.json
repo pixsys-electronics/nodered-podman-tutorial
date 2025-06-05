@@ -1,0 +1,141 @@
+[
+    {
+        "id": "1e6b97b5.687fd8",
+        "type": "tab",
+        "label": "Dashboard",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7c8f99d9.196b98",
+        "type": "ui_text",
+        "z": "1e6b97b5.687fd8",
+        "group": "dd4567b9.6a4c18",
+        "order": 1,
+        "width": "12",
+        "height": "1",
+        "name": "Title",
+        "label": "Dashboard - Random Data Display",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 330,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2e4a56f8.cfa23a",
+        "type": "ui_gauge",
+        "z": "1e6b97b5.687fd8",
+        "name": "Random Gauge",
+        "group": "dd4567b9.6a4c18",
+        "order": 2,
+        "width": "6",
+        "height": "6",
+        "gtype": "gage",
+        "title": "Random Value",
+        "label": "%",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": ["#00b500","#e6e600","#ca3838"],
+        "seg1": "30",
+        "seg2": "70",
+        "x": 320,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3b9ddefd.32b9d",
+        "type": "ui_chart",
+        "z": "1e6b97b5.687fd8",
+        "name": "Time-based Chart",
+        "group": "dd4567b9.6a4c18",
+        "order": 3,
+        "width": "6",
+        "height": "6",
+        "label": "Random Time Chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": ["#00b500","#e6e600","#ca3838"],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 600,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "74b1aef8.e7e0d8",
+        "type": "function",
+        "z": "1e6b97b5.687fd8",
+        "name": "Generate Random Data",
+        "func": "msg.payload = Math.floor(Math.random() * 100);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "2e4a56f8.cfa23a",
+                "3b9ddefd.32b9d"
+            ]
+        ]
+    },
+    {
+        "id": "e0e9bd3c.a8ae2",
+        "type": "inject",
+        "z": "1e6b97b5.687fd8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "74b1aef8.e7e0d8"
+            ]
+        ]
+    },
+    {
+        "id": "dd4567b9.6a4c18",
+        "type": "ui_group",
+        "z": "",
+        "name": "Random Data",
+        "tab": "fe9b4293.8df8e",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "fe9b4293.8df8e",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Main Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
