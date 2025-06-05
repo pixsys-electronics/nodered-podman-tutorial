@@ -194,7 +194,7 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
    <img src="assets/dockergui11.png" alt="Cockpit3" width="80%">
 
 
-### 4. Access Node-RED
+### 4. Configure Node-RED
 
 1. **Access Node-RED from your browser**:
    
