@@ -1,6 +1,8 @@
 # **Building your own Node-RED Image with Podman**
-<img src="assets/node-red-icon.png" alt="NodeRedIcon" width="10%">
-<img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
+<p align="left">
+   <img src="assets/node-red-icon.png" alt="NodeRedIcon" width="10%">
+   <img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
+</p>
 
 ## **Objective**
 
@@ -15,6 +17,7 @@ Run a Podman container with:
 - A [WebPanel (WP)](https://www.pixsys.net/en/hmi-panel-pc/web-panel) or [TouchController (TC)](https://www.pixsys.net/en/programmable-devices/hmi-codesys) device with a [WebVisu](https://github.com/tnentwig/WebVisu) license.
 - Basic knowledge of Linux commands
 - Basic knowledge of [podman](https://podman.io/) and containers
+- Basic knowledge of [Node-RED](https://nodered.org/) framework
 
 ## **Steps**
 
