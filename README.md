@@ -1,4 +1,6 @@
 # **Building your own Node-RED Image with Podman**
+<img src="assets/node-red-icon.png" alt="NodeRedIcon" width="10%">
+<img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
 
 ## **Objective**
 
@@ -177,3 +179,5 @@ podman load -i node-red-custom.tar
 ## **Conclusion**
 
 This guide provides a complete configuration for a **Node-RED** container on Podman with pre-installed **Dashboard** and **Modbus** modules, serial device access, and persistent configurations.
+
+<img src="assets/pixsys-icon.png" alt="PixsysIcon" width="50%">
