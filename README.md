@@ -15,13 +15,15 @@ Run a Podman container with:
 
 ## Prerequisites
 - A [WebPanel (WP)](https://www.pixsys.net/en/hmi-panel-pc/web-panel) or [TouchController (TC)](https://www.pixsys.net/en/programmable-devices/hmi-codesys) device with a [WebVisu](https://github.com/tnentwig/WebVisu) license.
-- Basic knowledge of Linux commands
+- Basic knowledge of Linux commands (optional if you use GUIs)
 - Basic knowledge of [podman](https://podman.io/) and containers
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
 
 ## **Steps**
 
 ### 1. Connect to the Device and Prepare the Working Directory
+
+#### Linux command-line
 
 1. **Connect to the device via SSH** using the **`user`** account:
    
@@ -41,9 +43,28 @@ Run a Podman container with:
    mkdir -p node-red-podman/data && cd node-red-podman
    ```
 
+#### WinSCP
+1. **Connect to the device via SSH** using the **`user`** account and navigate to `/data/user`:
+
+   <img src="assets/winscp0.png" alt="WinScp0" width="80%">
+
+2. Navigate to the `New` menu and choose the `Directory` option
+
+   <img src="assets/winscp1.png" alt="WinScp0" width="80%">
+
+3. Create the `node-red-podman` directory and give it RWX permission for ownwer, group, and other users
+
+   <img src="assets/winscp2.png" alt="WinScp0" width="80%">
+
+   **Note: you need to use these set of permissions only if you are going to run the container using Cockpit: this is due to the lack of options for the *podman run* command. If you are going to run the container via Linux command-line, you can give the created folder ONLY RWX permissions for the owner (first row of the permissions table), and leave the other rows empty, to enhance the security. This last is also the suggested way to run the container**
 ---
 
-### 2. Create the Dockerfile
+### 2. Setup the image
+
+#### Manual creation
+Going for a manual image creation allows you to have a custom image with every module you need, without manually install it later on the Node-RED GUI. This is the most portable and recommended way.
+
+**Note: follow the steps below only if you are going to run your container using command-line**
 
 Create a file named **`node-red.Dockerfile`** with the following content:
 
@@ -62,9 +83,8 @@ RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-mod
 EXPOSE 1880
 ```
 
-### 3. Create the Podman Compose File
-
-Create a file named **`node-red-compose.yml`** with the following content:
+Optionally (but recommended) you can create a podman-compose file that allows you to have a more flexible way to manage you container.
+To do so, create a file named **`node-red-compose.yml`** with the following content:
 
 ```yaml
 services:
@@ -88,6 +108,31 @@ services:
     volumes:
       - /data/user/node-red-podman/data:/data  # Persistent volume for flows and configurations
 ```
+
+#### Cockpit
+If you are not familiar with command-lines, you can do everything from the Cockpit GUI.
+
+0. Log-in into Cockpit from you WP, TC or directly from a PC through a browser at `http://<DEVICE_IP>:9443`
+1. Navigate to the `Podman containers` tab in the side-menu.
+
+   <img src="assets/dockergui0.png" alt="Cockpit0" width="80%">
+
+2. Choose "Download new image" on the kebab menu (3 vertical points) in the `Images` section
+
+   <img src="assets/dockergui1.png" alt="Cockpit1" width="80%">
+
+3. Select the `docker.io` registry and type `node-red` inside the search input text
+
+   <img src="assets/dockergui2.png" alt="Cockpit2" width="80%">
+
+4. Select the `docker.io/nodered/node-red` image and press the "Download" button
+
+   <img src="assets/dockergui4.png" alt="Cockpit3" width="80%">
+
+5. At the end of the download, you will be able to see the downloaded image inside the `Images` section
+
+   <img src="assets/dockergui6.png" alt="Cockpit3" width="80%">
+
 
 ### 5. Start the Container
 
