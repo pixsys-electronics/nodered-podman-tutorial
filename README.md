@@ -382,6 +382,8 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 ### 5. Set the dashboard as main page
 If you want the dashboard to be the main application of your WP/TC, access Cockpit and navigate to `WP Settings` and look for "Main application settings". Here, set the URL to `http://127.0.0.1:1880/ui` or `http://localhost:1880/ui`, and press the "Save" button. After then next reboot, the dashboard will appear in fullscreen-mode.
 
+   <img src="assets/cockpit-set-url.png" alt="NodeRedWelcome" width="80%">
+
 ### 6. (Optional) Export and Import the Image
 If you have manually created and built the node-red-custom image, and you want to use it in other WP/TC, you can export it from your current device and then load it in another, using podman.
 
