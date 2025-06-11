@@ -4,7 +4,7 @@
    <img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
 </p>
 
-## **Objective**
+## **Objective** 🔍
 
 Run a Podman container with:
 
@@ -20,7 +20,7 @@ Run a Podman container with:
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
 - Basic knowledge of the [SSH](https://en.wikipedia.org/wiki/Secure_Shell) protocol
 
-## **Steps**
+## **Steps** 👣
 
 ### 1. Connect to the Device and Prepare the Working Directory
 
@@ -399,7 +399,7 @@ To import the image on another system:
 podman load -i node-red-custom.tar
 ```
 
-## **Conclusion**
+## **Conclusion** 🏁
 
 This guide provides a complete configuration for a **Node-RED** container on Podman with pre-installed **Dashboard** and **Modbus** modules, serial device access, and persistent configurations.
 
