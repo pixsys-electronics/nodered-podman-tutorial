@@ -90,23 +90,23 @@ To do so, create a file named **`node-red-compose.yml`** with the following cont
 ```yaml
 services:
 	nodered:
-	 # tell podman-compose to build the previous custom node-red image
-	 build:
+	# tell podman-compose to build the previous custom node-red image
+	build:
 		context: .
 		dockerfile: node-red.Dockerfile
-	 image: node-red-custom
-	 container_name: NodeREDContainer
-	 restart: always
-	 group_add:
+	image: node-red-custom
+	container_name: NodeREDContainer
+	restart: always
+	group_add:
 		- keep-groups
-	 userns_mode: keep-id # map my host user to the user namespace of the container 
-	 user: ${MY_UID}:${MY_GID}
-	 ports:
+	userns_mode: keep-id # map my host user to the user namespace of the container 
+	user: ${MY_UID}:${MY_GID}
+	ports:
 			- 1880:1880 # map container port 1880 to host port 1880
-	 devices:
+	devices:
 		- /dev/ttyCOM1:/dev/ttyCOM1 # map devices
 		- /dev/ttyCOM2:/dev/ttyCOM2
-	 volumes:
+	volumes:
 		- /data/user/node-red-podman/data:/data	# Persistent volume for flows and configurations
 ```
 
@@ -225,15 +225,15 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 	If you want to make sure everything works correctly, use this [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) file as a test:
 
 	```json
-		[
-	 {
+	[
+		{
 			"id": "1e6b97b5.687fd8",
 			"type": "tab",
 			"label": "Dashboard",
 			"disabled": false,
 			"info": ""
-	 },
-	 {
+		},
+		{
 			"id": "7c8f99d9.196b98",
 			"type": "ui_text",
 			"z": "1e6b97b5.687fd8",
@@ -248,8 +248,8 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"x": 330,
 			"y": 120,
 			"wires": []
-	 },
-	 {
+		},
+		{
 			"id": "2e4a56f8.cfa23a",
 			"type": "ui_gauge",
 			"z": "1e6b97b5.687fd8",
@@ -270,8 +270,8 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"x": 320,
 			"y": 240,
 			"wires": []
-	 },
-	 {
+		},
+		{
 			"id": "3b9ddefd.32b9d",
 			"type": "ui_chart",
 			"z": "1e6b97b5.687fd8",
@@ -299,8 +299,8 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"x": 600,
 			"y": 240,
 			"wires": []
-	 },
-	 {
+		},
+		{
 			"id": "74b1aef8.e7e0d8",
 			"type": "function",
 			"z": "1e6b97b5.687fd8",
@@ -314,22 +314,22 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"x": 130,
 			"y": 240,
 			"wires": [
-				[
-					 "2e4a56f8.cfa23a",
-					 "3b9ddefd.32b9d"
+					[
+						 "2e4a56f8.cfa23a",
+						 "3b9ddefd.32b9d"
+					]
 				]
-			]
-	 },
-	 {
+		},
+		{
 			"id": "e0e9bd3c.a8ae2",
 			"type": "inject",
 			"z": "1e6b97b5.687fd8",
 			"name": "",
 			"props": [
-				{
-					 "p": "payload"
-				}
-			],
+					{
+						 "p": "payload"
+					}
+				],
 			"repeat": "1",
 			"crontab": "",
 			"once": true,
@@ -339,12 +339,12 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"x": 130,
 			"y": 160,
 			"wires": [
-				[
-					 "74b1aef8.e7e0d8"
+					[
+						 "74b1aef8.e7e0d8"
+					]
 				]
-			]
-	 },
-	 {
+		},
+		{
 			"id": "dd4567b9.6a4c18",
 			"type": "ui_group",
 			"z": "",
@@ -354,8 +354,8 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"disp": true,
 			"width": "12",
 			"collapse": false
-	 },
-	 {
+		},
+		{
 			"id": "fe9b4293.8df8e",
 			"type": "ui_tab",
 			"z": "",
@@ -364,7 +364,7 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 			"order": 1,
 			"disabled": false,
 			"hidden": false
-	 }
+		}
 	]
 	```
 
