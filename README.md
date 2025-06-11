@@ -13,7 +13,7 @@ Run a Podman container with:
 - Access to `/dev/ttyCOM1` and `/dev/ttyCOM2` devices (for Modbus)
 - Persistent volume to save Node-RED flows and configurations
 
-## Prerequisites
+## Prerequisites 🛠️
 - A [WebPanel (WP)](https://www.pixsys.net/en/hmi-panel-pc/web-panel) or [TouchController (TC)](https://www.pixsys.net/en/programmable-devices/hmi-codesys) device with a [WebVisu](https://github.com/tnentwig/WebVisu) license.
 - Basic knowledge of Linux commands (optional if you use GUIs)
 - Basic knowledge of [podman](https://podman.io/) and containers
