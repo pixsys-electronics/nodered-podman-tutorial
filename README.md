@@ -63,6 +63,7 @@ Run a Podman container with:
 		---
 
 2. Create the podman image
+	
    - If you are going for a manual image creation, you can customize your image with every module you need, without manually install it later on the Node-RED GUI. This is the most portable and recommended way.
 
 		**Note: follow the steps below only if you are going to run your container using command-line**
