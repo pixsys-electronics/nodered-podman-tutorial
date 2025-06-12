@@ -1,4 +1,6 @@
-# **Create your own Node-RED Image with Podman**
+Create your own Node-RED Image with Podman
+=================
+
 <p align="left">
 	<img src="assets/node-red-icon.png" alt="NodeRedIcon" width="10%">
 	<img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
@@ -18,7 +20,6 @@ Run a Podman container with:
 - Basic knowledge of Linux commands (optional if you use GUIs)
 - Basic knowledge of [podman](https://podman.io/) and containers
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
-- Basic knowledge of the [SSH](https://en.wikipedia.org/wiki/Secure_Shell) protocol
 
 ## **Steps** 👣
 
@@ -43,6 +44,7 @@ Run a Podman container with:
 			```bash
 			mkdir -p node-red-podman/data && cd node-red-podman
 			```
+	
 	- If you are using WinSCP (on Windows)
 
 		1. **Connect to the device via SSH** using the **`user`** account and navigate to `/data/user`:
