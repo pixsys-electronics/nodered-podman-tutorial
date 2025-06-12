@@ -6,7 +6,7 @@ Create your own Node-RED Image with Podman
 	<img src="assets/podman-icon.png" alt="PodmanIcon" width="10%">
 </p>
 
-## **Objective** 🔍
+## Objective 🔍
 
 Run a Podman container with:
 
@@ -14,14 +14,19 @@ Run a Podman container with:
 - Configured **dashboard**, **serial-port**, and **modbus** modules
 - Access to `/dev/ttyCOM1` and `/dev/ttyCOM2` devices (for Modbus)
 - Persistent volume to save Node-RED flows and configurations
+  
+## Description 📖
+
+If you need to configure your WebPanel/TouchController to connect different devices, services, or bits of logic and you don’t feel like writing a bunch of boilerplate code, you should use Node-RED. In this tutorial, you'll be guided into every step to have a *containerized* instance of NodeRED, configured with some basic peripherals.
 
 ## Prerequisites 🛠️
+
 - A [WebPanel (WP)](https://www.pixsys.net/en/hmi-panel-pc/web-panel) or [TouchController (TC)](https://www.pixsys.net/en/programmable-devices/hmi-codesys) device with a [WebVisu](https://github.com/tnentwig/WebVisu) license.
 - Basic knowledge of Linux commands (optional if you use GUIs)
 - Basic knowledge of [podman](https://podman.io/) and containers
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
 
-## **Steps** 👣
+## Steps 👣
 
 1. Connect to the Device and Prepare the Working Directory
 
