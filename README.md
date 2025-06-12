@@ -22,207 +22,190 @@ Run a Podman container with:
 
 ## **Steps** 👣
 
-### 1. Connect to the Device and Prepare the Working Directory
+1. Connect to the Device and Prepare the Working Directory
 
-#### Linux command-line
+	- If you are using a Linux shell:
 
-1. **Connect to the device via SSH** using the **`user`** account:
+		1. **Connect to the device via SSH** using the **`user`** account:
+
+			```bash
+			ssh user@<DEVICE_IP>
+			```
+
+		2. **Navigate to the persistent folder** `/data/user`:
+
+			```bash
+			cd /data/user
+			```
+
+		3. **Create a dedicated folder** for the image and project:
+
+			```bash
+			mkdir -p node-red-podman/data && cd node-red-podman
+			```
+	- If you are using WinSCP (on Windows)
+
+		1. **Connect to the device via SSH** using the **`user`** account and navigate to `/data/user`:
+
+			<img src="assets/winscp0.png" alt="WinScp0" width="80%">
+
+		2. Navigate to the `New` menu and choose the `Directory` option
+
+			<img src="assets/winscp1.png" alt="WinScp0" width="80%">
+
+		3. Create the `node-red-podman` directory and give it RWX permission for owner, group, and other users
+
+			<img src="assets/winscp2.png" alt="WinScp0" width="80%">
+
+			**Note: you need to use these set of permissions only if you are going to run the container using Cockpit: this is due to the lack of options for the *podman run* command. If you are going to run the container via Linux command-line, you can give the created folder ONLY RWX permissions for the owner (first row of the permissions table), and leave the other rows empty, to enhance the security. This last is also the suggested way to run the container**
+		---
+
+2. Create the podman image
+   - If you are going for a manual image creation, you can customize your image with every module you need, without manually install it later on the Node-RED GUI. This is the most portable and recommended way.
+
+		**Note: follow the steps below only if you are going to run your container using command-line**
+
+		1. Create a file named **`node-red.Dockerfile`** with the following content:
+
+			```dockerfile
+			# Use Node-RED as base
+			FROM docker.io/nodered/node-red:3.1.15
+
+			# Maintainer information
+			LABEL maintainer="YourName <youremail@example.com>"
+
+			# Install additional modules: Dashboard, OPC-UA, InfluxDB
+			RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-modbus node-red-contrib-modbus-flex-server && \
+				 npm cache clean --force
+
+			# Expose port 1880 for Node-RED access
+			EXPOSE 1880
+			```
+
+		2. Optionally (but recommended) you can create a podman-compose file that allows you to have a more flexible way to manage you container. To do so, create a file named **`node-red-compose.yml`** with the following content:
+
+			```yaml
+			services:
+				nodered:
+				# tell podman-compose to build the previous custom node-red image
+				build:
+					context: .
+					dockerfile: node-red.Dockerfile
+				image: node-red-custom
+				container_name: NodeREDContainer
+				restart: always
+				group_add:
+					- keep-groups
+				userns_mode: keep-id # map my host user to the user namespace of the container 
+				user: ${MY_UID}:${MY_GID}
+				ports:
+						- 1880:1880 # map container port 1880 to host port 1880
+				devices:
+					- /dev/ttyCOM1:/dev/ttyCOM1 # map devices
+					- /dev/ttyCOM2:/dev/ttyCOM2
+				volumes:
+					- /data/user/node-red-podman/data:/data	# Persistent volume for flows and configurations
+			```
+
+	- If you are not familiar with Linux shells, you can do everything from the Cockpit GUI.
+
+		1. Log-in into Cockpit from you WP, TC or directly from a PC through a browser at `http://<DEVICE_IP>:9443`
+		2. Navigate to the `Podman containers` tab in the side-menu.
+
+			<img src="assets/dockergui0.png" alt="Cockpit0" width="80%">
+
+		3. Choose "Download new image" on the kebab menu (3 vertical points) in the `Images` section
+
+			<img src="assets/dockergui1.png" alt="Cockpit1" width="80%">
+
+		4. Select the `docker.io` registry and type `node-red` inside the search input text
+
+			<img src="assets/dockergui2.png" alt="Cockpit2" width="80%">
+
+		5. Select the `docker.io/nodered/node-red` image and press the "Download" button
+
+			<img src="assets/dockergui4.png" alt="Cockpit3" width="80%">
+
+		6. At the end of the download, you will be able to see the downloaded image inside the `Images` section
+
+			<img src="assets/dockergui6.png" alt="Cockpit3" width="80%">
+
+
+3. Create and start the Container
+
+	- if you are using a Linux shell, and you didn't create a `node-red-compose.yml` and you just want to use podman, you need to:
+
+		1. Build the image
+
+			```bash
+			podman build -t node-red-custom -f node-red.Dockerfile .
+			```
+
+		2. Run the container
+
+			```bash
+			podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom	
+			```
+
+	- if you are using a Linux shell, and you want to use `podman-compose`, you only need to run:
 	
-	```bash
-	ssh user@<DEVICE_IP>
-	```
+		```bash
+		MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --build
+		```
+		**Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
 
-2. **Navigate to the persistent folder** `/data/user`:
+		To make sure the container is running, run:
+
+		```bash
+		podman ps
+		```
+
+		The output should be something like this:
+
+		```bash
+		CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
+		004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
+		```
 	
-	```bash
-	cd /data/user
-	```
+	- If you want to use Cockpit to manage the container:
+		1. On the `Containers` section, press the "Create container" button. A menu will appear.
 
-3. **Create a dedicated folder** for the image and project:
-	
-	```bash
-	mkdir -p node-red-podman/data && cd node-red-podman
-	```
+			<img src="assets/dockergui7.png" alt="Cockpit3" width="80%">
 
-#### WinSCP
-1. **Connect to the device via SSH** using the **`user`** account and navigate to `/data/user`:
+		2. Fill the `Details` section as shown below:
 
-	<img src="assets/winscp0.png" alt="WinScp0" width="80%">
+			<img src="assets/dockergui8.png" alt="Cockpit3" width="80%">
 
-2. Navigate to the `New` menu and choose the `Directory` option
+		3. Navigate to the `Integration` tab and fill it as shown below:
 
-	<img src="assets/winscp1.png" alt="WinScp0" width="80%">
+			<img src="assets/dockergui9.png" alt="Cockpit3" width="80%">
 
-3. Create the `node-red-podman` directory and give it RWX permission for ownwer, group, and other users
+		4. Navigate to the `Health check` tab and fill it as shown below:
 
-	<img src="assets/winscp2.png" alt="WinScp0" width="80%">
+			<img src="assets/dockergui10.png" alt="Cockpit3" width="80%">
 
-	**Note: you need to use these set of permissions only if you are going to run the container using Cockpit: this is due to the lack of options for the *podman run* command. If you are going to run the container via Linux command-line, you can give the created folder ONLY RWX permissions for the owner (first row of the permissions table), and leave the other rows empty, to enhance the security. This last is also the suggested way to run the container**
----
+		5. Press the "Create and run" button. After the creation, you will be able to see the created container inside the `Container` section, with a "Running" value on the `State` column.
 
-### 2. Setup the image
-
-#### Manual creation
-Going for a manual image creation allows you to have a custom image with every module you need, without manually install it later on the Node-RED GUI. This is the most portable and recommended way.
-
-**Note: follow the steps below only if you are going to run your container using command-line**
-
-Create a file named **`node-red.Dockerfile`** with the following content:
-
-```dockerfile
-# Use Node-RED as base
-FROM docker.io/nodered/node-red:3.1.15
-
-# Maintainer information
-LABEL maintainer="YourName <youremail@example.com>"
-
-# Install additional modules: Dashboard, OPC-UA, InfluxDB
-RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-modbus node-red-contrib-modbus-flex-server && \
-	 npm cache clean --force
-
-# Expose port 1880 for Node-RED access
-EXPOSE 1880
-```
-
-Optionally (but recommended) you can create a podman-compose file that allows you to have a more flexible way to manage you container.
-To do so, create a file named **`node-red-compose.yml`** with the following content:
-
-```yaml
-services:
-	nodered:
-	# tell podman-compose to build the previous custom node-red image
-	build:
-		context: .
-		dockerfile: node-red.Dockerfile
-	image: node-red-custom
-	container_name: NodeREDContainer
-	restart: always
-	group_add:
-		- keep-groups
-	userns_mode: keep-id # map my host user to the user namespace of the container 
-	user: ${MY_UID}:${MY_GID}
-	ports:
-			- 1880:1880 # map container port 1880 to host port 1880
-	devices:
-		- /dev/ttyCOM1:/dev/ttyCOM1 # map devices
-		- /dev/ttyCOM2:/dev/ttyCOM2
-	volumes:
-		- /data/user/node-red-podman/data:/data	# Persistent volume for flows and configurations
-```
-
-#### Cockpit
-If you are not familiar with command-lines, you can do everything from the Cockpit GUI.
-
-0. Log-in into Cockpit from you WP, TC or directly from a PC through a browser at `http://<DEVICE_IP>:9443`
-1. Navigate to the `Podman containers` tab in the side-menu.
-
-	<img src="assets/dockergui0.png" alt="Cockpit0" width="80%">
-
-2. Choose "Download new image" on the kebab menu (3 vertical points) in the `Images` section
-
-	<img src="assets/dockergui1.png" alt="Cockpit1" width="80%">
-
-3. Select the `docker.io` registry and type `node-red` inside the search input text
-
-	<img src="assets/dockergui2.png" alt="Cockpit2" width="80%">
-
-4. Select the `docker.io/nodered/node-red` image and press the "Download" button
-
-	<img src="assets/dockergui4.png" alt="Cockpit3" width="80%">
-
-5. At the end of the download, you will be able to see the downloaded image inside the `Images` section
-
-	<img src="assets/dockergui6.png" alt="Cockpit3" width="80%">
+			<img src="assets/dockergui11.png" alt="Cockpit3" width="80%">
 
 
-### 3. Create and start the Container
-
-#### Linux command-line
-If you didn't create a `node-red-compose.yml` and you just want to use podman, you need to:
-
-1. Build the image
-
-	```bash
-	podman build -t node-red-custom -f node-red.Dockerfile .
-	```
-
-2. Run the container
-
-	```bash
-	podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom	
-	```
-
-Otherwise, if you want to go for podman-compose, you only need to run:
-
-```bash
-MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --build
-```
-**Note: *MY_UID* and *MY_GID* are set to user ID and group ID of your current user, which should be *user*. This way, everything written by the container user will have the same ownership of your host user.**
-
-To make sure the container is running, run:
-
-```bash
-podman ps
-```
-
-The output should be something like this:
-
-```bash
-CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
-004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
-```
-
-#### Cockpit
-1. On the `Containers` section, press the "Create container" button. A menu will appear.
-
-	<img src="assets/dockergui7.png" alt="Cockpit3" width="80%">
-
-2. Fill the `Details` section as shown below:
-
-	<img src="assets/dockergui8.png" alt="Cockpit3" width="80%">
-
-3. Navigate to the `Integration` tab and fill it as shown below:
-
-	<img src="assets/dockergui9.png" alt="Cockpit3" width="80%">
-
-4. Navigate to the `Health check` tab and fill it as shown below:
-
-	<img src="assets/dockergui10.png" alt="Cockpit3" width="80%">
-
-5. Press the "Create and run" button. After the creation, you will be able to see the created container inside the `Container` section, with a "Running" value on the `State` column.
-
-	<img src="assets/dockergui11.png" alt="Cockpit3" width="80%">
-
-
-### 4. Configure Node-RED
-
-1. **Access Node-RED from your browser**:
-	
-	Open a browser and navigate to:
-	
-	```
-	http://<DEVICE_IP>:1880
-	```
+4. Open a browser and navigate to `	http://<DEVICE_IP>:1880`, which is the default port for NodeRED.
 
 	<img src="assets/node-red-welcome.png" alt="NodeRedWelcome" width="60%">
 
-2. **Install and verify the modules**:
-	
-	1. Go to the **Manage palette** menu in Node-RED by pressing the hamburger menu icon on the top right
+5. Go to the **Manage palette** menu in Node-RED by pressing the hamburger menu icon on the top right
 
 	<img src="assets/node-red-hamburger.png" alt="NodeRedWelcome" width="60%">
 
-	2. If you have followed the `Cockpit` guide, you will need to manually install the *dashboard* and the *modbus* modulesm otherwise go directly to section 4.3. Type `node-red-dashboard` and press the "Install" button to install the module. Do the same thing with `node-red-contrib-modbus` and `node-red-contrib-serial-port`
+	If you have followed the `Cockpit` guide, you will need to manually install the *dashboard* and the *modbus* modulesm otherwise go directly to section 4.3. Type `node-red-dashboard` and press the "Install" button to install the module. Do the same thing with `node-red-contrib-modbus` and `node-red-contrib-serial-port`
 
 	<img src="assets/node-red-install-module.png" alt="NodeRedWelcome" width="60%">
 
-	3. Check that the modules are installed.
+6. Check that the modules are installed.
 
 	<img src="assets/node-red-nodes.png" alt="NodeRedWelcome" width="60%">
 
-3. **Import a flow**
-
-	If you want to make sure everything works correctly, use this [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) file as a test:
+7. If you want to make sure everything works correctly, use this [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) file as a test:
 
 	```json
 	[
@@ -368,36 +351,35 @@ CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 	]
 	```
 
-	1. Go to the **Import** menu by pressing the hamburger menu icon on the top right, and paste the file above, then press the "Import" button.
+8. Go to the **Import** menu by pressing the hamburger menu icon on the top right, and paste the file above, then press the "Import" button.
 
-		<img src="assets/node-red-import.png" alt="NodeRedWelcome" width="80%">
-		<img src="assets/node-red-import-node.png" alt="NodeRedWelcome" width="80%">
-		<img src="assets/node-red-diagram.png" alt="NodeRedWelcome" width="80%">
-	
-	2. Press the red "Deploy" button on the top-right of the page
-	3. Navigate to `<DEVICE_ADDRESS>:1880/ui`. The output should be something like this:
+	<img src="assets/node-red-import.png" alt="NodeRedWelcome" width="80%">
+	<img src="assets/node-red-import-node.png" alt="NodeRedWelcome" width="80%">
+	<img src="assets/node-red-diagram.png" alt="NodeRedWelcome" width="80%">
 
-		<img src="assets/node-red-dashboard.png" alt="NodeRedWelcome" width="80%">
+9. Press the red "Deploy" button on the top-right of the page
+10. Navigate to `<DEVICE_ADDRESS>:1880/ui`. The output should be something like this:
 
-### 5. Set the dashboard as main page
-If you want the dashboard to be the main application of your WP/TC, access Cockpit and navigate to `WP Settings` and look for "Main application settings". Here, set the URL to `http://127.0.0.1:1880/ui` or `http://localhost:1880/ui`, and press the "Save" button. After then next reboot, the dashboard will appear in fullscreen-mode.
+	<img src="assets/node-red-dashboard.png" alt="NodeRedWelcome" width="80%">
+
+11. If you want the dashboard to be the main application of your WP/TC, access Cockpit and navigate to `WP Settings` and look for "Main application settings". Here, set the URL to `http://127.0.0.1:1880/ui` or `http://localhost:1880/ui`, and press the "Save" button. After then next reboot, the dashboard will appear in fullscreen-mode.
 
 	<img src="assets/cockpit-set-url.png" alt="NodeRedWelcome" width="80%">
 
-### 6. (Optional) Export and Import the Image
+12. Export and Import the Image (Optional)
 If you have manually created and built the node-red-custom image, and you want to use it in other WP/TC, you can export it from your current device and then load it in another, using podman.
 
-To save the image as a tar archive:
+	To save the image as a tar archive:
 
-```bash
-podman save -o node-red-custom.tar node-red-custom
-```
+	```bash
+	podman save -o node-red-custom.tar node-red-custom
+	```
 
-To import the image on another system:
+	To import the image on another system:
 
-```bash
-podman load -i node-red-custom.tar
-```
+	```bash
+	podman load -i node-red-custom.tar
+	```
 
 ## **Conclusion** 🏁
 
