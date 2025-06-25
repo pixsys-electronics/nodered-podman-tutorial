@@ -26,7 +26,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 - Basic knowledge of [podman](https://podman.io/) and containers
 - Basic knowledge of [Node-RED](https://nodered.org/) framework
 
-## Steps 👣
+## Steps 🪜
 
 1. Connect to the Device and Prepare the Working Directory
 
