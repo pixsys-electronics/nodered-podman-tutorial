@@ -210,7 +210,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 	<img src="assets/node-red-nodes.png" alt="NodeRedWelcome" width="60%">
 
-7. In order to make sure everything works correctly, the following [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) has been provided. It will generate a workspace where the 2 serial ports (`/dev/ttyCOM1` and `/dev/ttyCOM2`) are connected in looback, while a random values generator periodically writes to `/dev/ttyCOM1` and a gauge and a time plot shows data that is coming from `/dev/ttyCOM1`. If everything is set up correctly, you should see data printed in the debug window, and charts is the dashboard moving every second.
+7. In order to make sure everything works correctly, the following [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) has been provided. It will generate a workspace where the 2 serial ports (`/dev/ttyCOM1` and `/dev/ttyCOM2`) are connected in loopback. A random values generator periodically writes to `/dev/ttyCOM1` and a gauge and a time plot shows data that is coming from `/dev/ttyCOM2`. If everything is set up correctly, you should see data printed in the debug window, and charts is the dashboard moving every second.
 
 	```json
 	[
