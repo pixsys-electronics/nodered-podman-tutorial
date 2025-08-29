@@ -116,14 +116,10 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 			The following table shows how serial ports (RS485) are linked to `/dev/ttyCOM*` based on the WP/TC model:
 
-			|Model|Serial port|Original|Map|
-			|-|-|-|-|
-			|P2|Port 1 (RS485)|/dev/ttyS5|/dev/ttyCOM1|
-			|P2|Port 2 (RS485)|/dev/ttyS0|/dev/ttyCOM2|
-			|P3|Port 1 (RS485)|/dev/ttyS2|/dev/ttyCOM1|
-			|P3|Port 2 (RS485)|/dev/ttyS0|/dev/ttyCOM2|
-			|P4|Port 1 (RS485)|/dev/ttyS5|/dev/ttyCOM1|
-			|P4|Port 2 (RS485)|/dev/ttyS2|/dev/ttyCOM2|
+			|Device|Serial port|P2|P3|P4|
+			|-|-|-|-|-|
+			|/dev/ttyCOM1|Port 1(RS485)|/dev/ttyS5|dev/ttyS2|/dev/ttyS5|
+			|/dev/ttyCOM2|Port 2(RS485)|/dev/ttyS0|dev/ttyS0|/dev/ttyS2|
 
 
 	- If you are not familiar with Linux shells (or you don't need to map hardware peripherals to your container), you can do everything from the Cockpit GUI.
