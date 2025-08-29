@@ -96,25 +96,25 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 			```yaml
 			services:
-				nodered:
-				# tell podman-compose to build the previous custom node-red image
-				build:
-					context: .
-					dockerfile: node-red.Dockerfile
-				image: node-red-custom
-				container_name: NodeREDContainer
-				restart: always
-				group_add:
-					- keep-groups
-				userns_mode: keep-id # map my host user to the user namespace of the container 
-				user: ${MY_UID}:${MY_GID}
-				ports:
-						- 1880:1880 # map container port 1880 to host port 1880
-				devices:
-					- /dev/ttyCOM1:/dev/ttyCOM1 # map devices
-					- /dev/ttyCOM2:/dev/ttyCOM2
-				volumes:
-					- /data/user/node-red-podman/data:/data	# Persistent volume for flows and configurations
+			  nodered:
+			    # tell podman-compose to build the previous custom node-red image
+			    build:
+			      context: .
+			      dockerfile: node-red.Dockerfile
+			    image: node-red-custom
+			    container_name: NodeREDContainer
+			    restart: always
+			    group_add:
+			      - keep-groups
+			    userns_mode: keep-id # map my host user to the user namespace of the container 
+			    user: ${MY_UID}:${MY_GID}
+			    ports:
+			      - 1880:1880 # map container port 1880 to host port 1880
+			    devices:
+			      - /dev/ttyCOM1:/dev/ttyCOM1 # map devices
+			      - /dev/ttyCOM2:/dev/ttyCOM2
+			    volumes:
+			      - /data/user/node-red-podman/data:/data  # Persistent volume for flows and configurations
 			```
 
 	- If you are not familiar with Linux shells (or you don't need to map hardware peripherals to your container), you can do everything from the Cockpit GUI.
@@ -193,7 +193,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 	<img src="assets/node-red-hamburger.png" alt="NodeRedWelcome" width="60%">
 
-	If you have followed the `Cockpit` guide, you will need to manually install the *dashboard* and the *modbus* modulesm otherwise go directly to section 4.3. Type `node-red-dashboard` and press the "Install" button to install the module. Do the same thing with `node-red-contrib-modbus` and `node-red-contrib-serial-port`
+	If you have followed the `Cockpit` guide, you will need to manually install the *dashboard* and the *modbus* module otherwise go directly to section 4.3. Type `node-red-dashboard` and press the "Install" button to install the module. Do the same thing with `node-red-contrib-modbus` and `node-red-contrib-serial-port`
 
 	<img src="assets/node-red-install-module.png" alt="NodeRedWelcome" width="60%">
 

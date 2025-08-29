@@ -12,7 +12,7 @@ services:
     userns_mode: keep-id # map my host user to the user namespace of the container 
     user: ${MY_UID}:${MY_GID}
     ports:
-        - 1880:1880 # map container port 1880 to host port 1880
+      - 1880:1880 # map container port 1880 to host port 1880
     devices:
       - /dev/ttyCOM1:/dev/ttyCOM1 # map devices
       - /dev/ttyCOM2:/dev/ttyCOM2
