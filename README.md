@@ -213,132 +213,213 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 	<img src="assets/node-red-nodes.png" alt="NodeRedWelcome" width="60%">
 
-7. If you want to make sure everything works correctly, use this [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) file as a test:
+7. In order to make sure everything works correctly, the following [flow](https://nodered.org/docs/user-guide/editor/workspace/flows) has been provided. It will generate a workspace where the 2 serial ports (`/dev/ttyCOM1` and `/dev/ttyCOM2`) are connected in looback, while a random values generator periodically writes to `/dev/ttyCOM1` and a gauge and a time plot shows data that is coming from `/dev/ttyCOM1`. If everything is set up correctly, you should see data printed in the debug window, and charts is the dashboard moving every second.
 
 	```json
 	[
 		{
-			"id": "1e6b97b5.687fd8",
+			"id": "d97e65e44eec16d0",
 			"type": "tab",
-			"label": "Dashboard",
+			"label": "Flow 2",
 			"disabled": false,
-			"info": ""
+			"info": "",
+			"env": []
 		},
 		{
-			"id": "7c8f99d9.196b98",
-			"type": "ui_text",
-			"z": "1e6b97b5.687fd8",
-			"group": "dd4567b9.6a4c18",
-			"order": 1,
-			"width": "12",
-			"height": "1",
-			"name": "Title",
-			"label": "Dashboard - Random Data Display",
-			"format": "{{msg.payload}}",
-			"layout": "col-center",
-			"x": 330,
-			"y": 120,
+			"id": "serial-in2",
+			"type": "serial in",
+			"z": "d97e65e44eec16d0",
+			"name": "Read COM2",
+			"serial": "serial-com2",
+			"x": 260,
+			"y": 260,
+			"wires": [
+				[
+					"debug1",
+					"50103a7801e594b3",
+					"b6470a2fbd45a5c6"
+				]
+			]
+		},
+		{
+			"id": "debug1",
+			"type": "debug",
+			"z": "d97e65e44eec16d0",
+			"name": "Received on COM2",
+			"active": true,
+			"tosidebar": true,
+			"console": false,
+			"tostatus": false,
+			"complete": "payload",
+			"targetType": "msg",
+			"statusVal": "",
+			"statusType": "auto",
+			"x": 470,
+			"y": 260,
 			"wires": []
 		},
 		{
-			"id": "2e4a56f8.cfa23a",
+			"id": "serial-out1",
+			"type": "serial out",
+			"z": "d97e65e44eec16d0",
+			"name": "Write COM1",
+			"serial": "serial-com1",
+			"x": 530,
+			"y": 200,
+			"wires": []
+		},
+		{
+			"id": "50103a7801e594b3",
 			"type": "ui_gauge",
-			"z": "1e6b97b5.687fd8",
-			"name": "Random Gauge",
+			"z": "d97e65e44eec16d0",
+			"name": "",
 			"group": "dd4567b9.6a4c18",
-			"order": 2,
-			"width": "6",
-			"height": "6",
+			"order": 3,
+			"width": 0,
+			"height": 0,
 			"gtype": "gage",
-			"title": "Random Value",
-			"label": "%",
+			"title": "gauge",
+			"label": "units",
 			"format": "{{value}}",
 			"min": "0",
 			"max": "100",
-			"colors": ["#00b500","#e6e600","#ca3838"],
-			"seg1": "30",
-			"seg2": "70",
-			"x": 320,
-			"y": 240,
+			"colors": [
+				"#00b500",
+				"#e6e600",
+				"#ca3838"
+			],
+			"seg1": "",
+			"seg2": "",
+			"diff": false,
+			"className": "",
+			"x": 430,
+			"y": 320,
 			"wires": []
 		},
 		{
-			"id": "3b9ddefd.32b9d",
+			"id": "b6470a2fbd45a5c6",
 			"type": "ui_chart",
-			"z": "1e6b97b5.687fd8",
-			"name": "Time-based Chart",
+			"z": "d97e65e44eec16d0",
+			"name": "",
 			"group": "dd4567b9.6a4c18",
-			"order": 3,
-			"width": "6",
-			"height": "6",
-			"label": "Random Time Chart",
+			"order": 4,
+			"width": 0,
+			"height": 0,
+			"label": "chart",
 			"chartType": "line",
 			"legend": "false",
 			"xformat": "HH:mm:ss",
 			"interpolate": "linear",
 			"nodata": "",
-			"ymin": "0",
-			"ymax": "100",
+			"dot": false,
+			"ymin": "",
+			"ymax": "",
 			"removeOlder": 1,
 			"removeOlderPoints": "",
-			"removeOlderUnit": "3600",
+			"removeOlderUnit": "60",
 			"cutout": 0,
 			"useOneColor": false,
-			"colors": ["#00b500","#e6e600","#ca3838"],
+			"useUTC": false,
+			"colors": [
+				"#1f77b4",
+				"#aec7e8",
+				"#ff7f0e",
+				"#2ca02c",
+				"#98df8a",
+				"#d62728",
+				"#ff9896",
+				"#9467bd",
+				"#c5b0d5"
+			],
 			"outputs": 1,
 			"useDifferentColor": false,
-			"x": 600,
-			"y": 240,
-			"wires": []
+			"className": "",
+			"x": 430,
+			"y": 360,
+			"wires": [
+				[]
+			]
 		},
 		{
-			"id": "74b1aef8.e7e0d8",
+			"id": "inject1",
+			"type": "inject",
+			"z": "d97e65e44eec16d0",
+			"name": "Clock",
+			"props": [
+				{
+					"p": "payload"
+				}
+			],
+			"repeat": "0.5",
+			"crontab": "",
+			"once": false,
+			"onceDelay": 0.1,
+			"topic": "",
+			"payload": "",
+			"payloadType": "date",
+			"x": 120,
+			"y": 200,
+			"wires": [
+				[
+					"7881fa133223c1b1"
+				]
+			]
+		},
+		{
+			"id": "7881fa133223c1b1",
 			"type": "function",
-			"z": "1e6b97b5.687fd8",
-			"name": "Generate Random Data",
+			"z": "d97e65e44eec16d0",
+			"name": "RandomNumberGenerator",
 			"func": "msg.payload = Math.floor(Math.random() * 100);\nreturn msg;",
 			"outputs": 1,
+			"timeout": 0,
 			"noerr": 0,
 			"initialize": "",
 			"finalize": "",
 			"libs": [],
-			"x": 130,
-			"y": 240,
+			"x": 320,
+			"y": 200,
 			"wires": [
-					[
-						 "2e4a56f8.cfa23a",
-						 "3b9ddefd.32b9d"
-					]
+				[
+					"serial-out1"
 				]
+			]
 		},
 		{
-			"id": "e0e9bd3c.a8ae2",
-			"type": "inject",
-			"z": "1e6b97b5.687fd8",
-			"name": "",
-			"props": [
-					{
-						 "p": "payload"
-					}
-				],
-			"repeat": "1",
-			"crontab": "",
-			"once": true,
-			"onceDelay": 0.1,
-			"topic": "",
-			"payloadType": "date",
-			"x": 130,
-			"y": 160,
-			"wires": [
-					[
-						 "74b1aef8.e7e0d8"
-					]
-				]
+			"id": "serial-com2",
+			"type": "serial-port",
+			"name": "COM2",
+			"serialport": "/dev/ttyCOM2",
+			"serialbaud": "9600",
+			"databits": "8",
+			"parity": "none",
+			"stopbits": "1",
+			"waitfor": "",
+			"newline": "\\n",
+			"bin": "false",
+			"out": "char",
+			"addchar": "",
+			"responsetimeout": "10000"
+		},
+		{
+			"id": "serial-com1",
+			"type": "serial-port",
+			"name": "COM1",
+			"serialport": "/dev/ttyCOM1",
+			"serialbaud": "9600",
+			"databits": "8",
+			"parity": "none",
+			"stopbits": "1",
+			"waitfor": "",
+			"newline": "\\n",
+			"bin": "false",
+			"out": "char",
+			"addchar": "\\n",
+			"responsetimeout": "10000"
 		},
 		{
 			"id": "dd4567b9.6a4c18",
 			"type": "ui_group",
-			"z": "",
 			"name": "Random Data",
 			"tab": "fe9b4293.8df8e",
 			"order": 1,
@@ -349,7 +430,6 @@ If you need to configure your WebPanel/TouchController to connect different devi
 		{
 			"id": "fe9b4293.8df8e",
 			"type": "ui_tab",
-			"z": "",
 			"name": "Main Dashboard",
 			"icon": "dashboard",
 			"order": 1,
@@ -359,11 +439,11 @@ If you need to configure your WebPanel/TouchController to connect different devi
 	]
 	```
 
-8. Go to the **Import** menu by pressing the hamburger menu icon on the top right, and paste the file above, then press the "Import" button.
+8. Go to the **Import** menu by pressing the hamburger menu icon on the top right and paste the file above inside the text window, then press the "Import" button.
 
 	<img src="assets/node-red-import.png" alt="NodeRedWelcome" width="80%">
 	<img src="assets/node-red-import-node.png" alt="NodeRedWelcome" width="80%">
-	<img src="assets/node-red-diagram.png" alt="NodeRedWelcome" width="80%">
+	<img src="assets/flow-serial-loopback.png" alt="NodeRedWelcome" width="80%">
 
 9. Press the red "Deploy" button on the top-right of the page
 10. Navigate to `<DEVICE_ADDRESS>:1880/ui`. The output should be something like this:
