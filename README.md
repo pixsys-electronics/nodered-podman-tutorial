@@ -81,10 +81,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 			# Use Node-RED as base
 			FROM docker.io/nodered/node-red:3.1.15
 
-			# Maintainer information
-			LABEL maintainer="YourName <youremail@example.com>"
-
-			# Install additional modules: Dashboard, OPC-UA, InfluxDB
+			# Install additional modules: dashboard, serial-port, modbus client/server
 			RUN npm install node-red-node-serialport node-red-dashboard node-red-contrib-modbus node-red-contrib-modbus-flex-server && \
 				 npm cache clean --force
 
