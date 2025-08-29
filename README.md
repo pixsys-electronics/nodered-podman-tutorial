@@ -28,6 +28,8 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 ## Steps 🪜
 
+**Note: if you have planned to use physical hardware peripherals in your Node-RED container, you will need to "manually" create your container using a `podman-compose.yml` file, as explained in the section *2***
+
 1. Connect to the Device and Prepare the Working Directory
 
 	- If you are using a Linux shell:
@@ -90,7 +92,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 			EXPOSE 1880
 			```
 
-		2. Optionally (but recommended) you can create a podman-compose file that allows you to have a more flexible way to manage you container. To do so, create a file named **`node-red-compose.yml`** with the following content:
+		2. Create a podman-compose file named **`node-red-compose.yml`** with the following content:
 
 			```yaml
 			services:
@@ -115,7 +117,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 					- /data/user/node-red-podman/data:/data	# Persistent volume for flows and configurations
 			```
 
-	- If you are not familiar with Linux shells, you can do everything from the Cockpit GUI.
+	- If you are not familiar with Linux shells (or you don't need to map hardware peripherals to your container), you can do everything from the Cockpit GUI.
 
 		1. Log-in into Cockpit from you WP, TC or directly from a PC through a browser at `http://<DEVICE_IP>:9443`
 		2. Navigate to the `Podman containers` tab in the side-menu.
@@ -141,21 +143,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 3. Create and start the Container
 
-	- if you are using a Linux shell, and you didn't create a `node-red-compose.yml` and you just want to use podman, you need to:
-
-		1. Build the image
-
-			```bash
-			podman build -t node-red-custom -f node-red.Dockerfile .
-			```
-
-		2. Run the container
-
-			```bash
-			podman run --group-add=keep-groups --userns=keep-id -u $(id -u):$(id -g) -v /data/user/node-red-podman/data:/data -p 1880:1880 --device=/dev/ttyCOM1 --device=/dev/ttyCOM2 node-red-custom	
-			```
-
-	- if you are using a Linux shell, and you want to use `podman-compose`, you only need to run:
+	- if you have followed the manual setup with podman-compose, you only need to run:
 	
 		```bash
 		MY_UID=$(id -u) MY_GID=$(id -g) podman-compose -f node-red-compose.yml up --build
