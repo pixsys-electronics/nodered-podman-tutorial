@@ -171,6 +171,11 @@ If you need to configure your WebPanel/TouchController to connect different devi
 		CONTAINER ID	IMAGE	COMMAND	CREATED	STATUS	PORTS	NAMES
 		004d1d95bbd0	localhost/node-red-custom:latest	2 minutes ago	Up 2 minutes	0.0.0.0:1880->1880/tcp	NodeREDContainer
 		```
+
+		In order to make sure that the container is started at every boot of the machine, run:
+		```bash
+		systemctl --user enable podman-restart.service
+		```
 	
 	- If you want to use Cockpit to manage the container:
 		1. On the `Containers` section, press the "Create container" button. A menu will appear.
@@ -451,8 +456,7 @@ If you need to configure your WebPanel/TouchController to connect different devi
 
 	<img src="assets/cockpit-set-url.png" alt="NodeRedWelcome" width="80%">
 
-12. Export and Import the Image (Optional)
-If you have manually created and built the node-red-custom image, and you want to use it in other WP/TC, you can export it from your current device and then load it in another, using podman.
+12. If you have manually created and built the node-red-custom image, and you want to use it in other WP/TC, you can export it from your current device and then load it in another, using podman.
 
 	To save the image as a tar archive:
 
